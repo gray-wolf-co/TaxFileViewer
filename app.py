@@ -4,27 +4,27 @@ import os
 
 app = Flask(__name__)
 
-# Obtener configuración desde variables de entorno
-WEBDAV_URL = os.environ.get('WEBDAV_URL')  # Ejemplo: https://tudominio.com/webdav/
+# Get configuration from environment variables
+WEBDAV_URL = os.environ.get('WEBDAV_URL')  # Example: https://yourdomain.com/webdav/
 WEBDAV_USERNAME = os.environ.get('WEBDAV_USERNAME')
 WEBDAV_PASSWORD = os.environ.get('WEBDAV_PASSWORD')
 
 @app.route('/pdf', methods=['GET'])
 def get_pdf():
-    # Obtener el nombre del archivo desde el parámetro 'name'
+    # Get the file name from the 'name' query parameter
     file_name = request.args.get('name')
     if not file_name:
         return Response("Error: 'name' parameter is required", status=400)
 
-    # Construir la URL completa del archivo
+    # Build the full file URL
     file_url = f"{WEBDAV_URL}{file_name}"
 
     try:
-        # Hacer la solicitud autenticada al WebDAV
+        # Make authenticated request to WebDAV server
         response = requests.get(file_url, auth=(WEBDAV_USERNAME, WEBDAV_PASSWORD), stream=True)
-        response.raise_for_status()  # Lanza un error si la solicitud falla
+        response.raise_for_status()  # Raise error if request failed
 
-        # Devolver el contenido del PDF como respuesta
+        # Return the PDF content as response
         return Response(
             response.content,
             content_type='application/pdf',
